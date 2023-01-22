@@ -1,32 +1,14 @@
-var PEG = require("../dist/python");
-var fs = require("fs");
+import { peg } from "https://code4fukui.github.io/pegjs/packages/pegjs/lib/peg.js";
 
-var program = fs.readFileSync("./test/test.py", "utf8");
+const program = await Deno.readTextFile("./test/test.py");
 
 console.log("# source -----");
 console.log(program);
 
-var result = PEG.parse(program);
+const input = await Deno.readTextFile("./src/peg/python.pegjs");
+const parser = peg.generate(input);
 
-console.log("\n# result -----");
+const result = parser.parse(program);
 
-function print(array) {
-  var result = [];
-  function _print(array) {
-    result.push("[");
-    array.forEach(element => {
-      if (Array.isArray(element)) {
-        _print(element);
-      } else {
-        if (element !== "\n") {
-          result.push(element);
-        }
-      }
-    })
-    result.push("]");
-  }
-  _print(array);
-  console.log(result.join(" "));
-}
-
-print(result);
+console.log("# result -----");
+console.log(JSON.stringify(result, null, 2));
